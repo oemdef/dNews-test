@@ -30,18 +30,23 @@ struct Source: Codable, Identifiable {
     let name: String?
 }
 
-struct DSection: Codable, Hashable {
+struct DSection: Hashable {
     let type: String
     let title: String
-    var items: [Article]
+    var items: [ArticleViewModel]
     
     init(type: String, title: String) {
         self.type = type
         self.title = title
-        self.items = [Article]()
+        self.items = [ArticleViewModel]()
     }
 }
 
+struct ArticlesRequestParams {
+    let pageSize: Int
+    let page: Int
+    let language: String
+}
 
 extension Article: Hashable {
     
@@ -66,3 +71,5 @@ extension Source: Hashable {
     }
     
 }
+
+

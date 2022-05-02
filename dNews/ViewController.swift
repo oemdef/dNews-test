@@ -10,13 +10,19 @@ import SnapKit
 import Alamofire
 
 class ViewController: UIViewController {
-        
-    var articles = [Article]()
+
+    var newArticles = [Article]()
+    var viewModels = [ArticleViewModel]()
     var sections = [DSection]()
+    
+    private var nextPageToLoad = 1
+    private var currentlyLoading = false
+    private var initialLoad = true
+    private var collectionViewIsLoaded = false
     
     var collectionView: UICollectionView!
     
-    var dataSource: UICollectionViewDiffableDataSource<DSection, Article>?
+    var dataSource: UICollectionViewDiffableDataSource<DSection, ArticleViewModel>?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +37,7 @@ class ViewController: UIViewController {
     }
     
     func setupCollectionView() {
+        print("setupCollectionView")
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createCompositionalLayout())
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         collectionView.backgroundColor = .systemBackground
@@ -101,15 +108,15 @@ class ViewController: UIViewController {
     }
     
     func createDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<DSection, Article>(collectionView: collectionView, cellProvider: { collectionView, indexPath, article in
+        dataSource = UICollectionViewDiffableDataSource<DSection, ArticleViewModel>(collectionView: collectionView, cellProvider: { collectionView, indexPath, viewModel in
             switch self.sections[indexPath.section].type {
             case "topHeadlinesSection":
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrendingCollectionViewCell.reuseId, for: indexPath) as! TrendingCollectionViewCell
-                cell.article = article
+                cell.viewModel = viewModel
                 return cell
             default:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ExploreCollectionViewCell.reuseId, for: indexPath) as! ExploreCollectionViewCell
-                cell.article = article
+                cell.viewModel = viewModel
                 return cell
             }
         })
@@ -126,7 +133,8 @@ class ViewController: UIViewController {
     }
     
     func reloadData() {
-        var snapshot = NSDiffableDataSourceSnapshot<DSection, Article>()
+        collectionViewIsLoaded = false
+        var snapshot = NSDiffableDataSourceSnapshot<DSection, ArticleViewModel>()
         
         snapshot.appendSections(sections)
         
@@ -135,47 +143,67 @@ class ViewController: UIViewController {
         }
         
         dataSource?.apply(snapshot)
+        collectionViewIsLoaded = true
     }
     
     func getArticles() {
-        let request = AF.request("https://newsapi.org/v2/top-headlines?language=en&pageSize=30&apiKey=b7a09219c47a4ffb9994a8376084fbb3")
+        
+        if !shouldLoadMoreData() {
+            return
+        }
+        currentlyLoading = true
+        
+        let params = ArticlesRequestParams(pageSize: 30, page: self.nextPageToLoad, language: "en")
+        let url = URLFactory.articles(params: params)
+        
+        let request = AF.request(url)
         
         request
             .validate()
             .responseDecodable(of: NewsResponse.self) { (response) in
-                print(response)
+                //print(response)
                 guard let topHeadlines = response.value else { return }
-                print(topHeadlines)
-                self.articles = topHeadlines.articles
+                
+                self.nextPageToLoad += 1
+                self.newArticles = topHeadlines.articles
                 
                 self.separateDataIntoSections()
                 
-                self.setupCollectionView()
-                self.createDataSource()
+                if self.initialLoad {
+                    self.setupCollectionView()
+                    self.createDataSource()
+                }
+                
                 self.reloadData()
+                self.currentlyLoading = false
+                self.initialLoad = false
             }
     }
     
+    func shouldLoadMoreData() -> Bool {
+        if currentlyLoading {
+            return false
+        }
+        return true
+    }
+    
     func separateDataIntoSections() {
-        var lastArticleInArray = articles.count
-
+        print("separateDataIntoSections")
         if sections.isEmpty {
             sections.append(DSection(type: "topHeadlinesSection", title: "Top stories"))
             sections.append(DSection(type: "exploreSection", title: "Explore"))
         }
-        
         if sections[0].items.isEmpty {
+            let initViewModels = makeViewModels(newArticles)
             for i in 0...9 {
-                sections[0].items.append(articles[i])
+                sections[0].items.append(initViewModels[i])
             }
-            lastArticleInArray = 10
+            for i in 10..<initViewModels.count {
+                sections[1].items.append(initViewModels[i])
+            }
+        } else {
+            sections[1].items.append(contentsOf: makeViewModels(newArticles))
         }
-        
-        for i in lastArticleInArray..<articles.count {
-            sections[1].items.append(articles[i])
-        }
-        
-        lastArticleInArray = articles.count
     }
     
 }
@@ -185,16 +213,52 @@ extension ViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     guard let selectedItem = dataSource?.itemIdentifier(for: indexPath) else { return }
         let detailsVC = DetailsViewController()
-        detailsVC.article = selectedItem
+        detailsVC.viewModel = selectedItem
         navigationController?.pushViewController(detailsVC, animated: true)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard !self.currentlyLoading,
+              (self.sections[1].items.count - indexPath.row) < 3 else { return }
+        print(indexPath.row)
+        print(self.sections[1].items.count)
+        getArticles()
     }
     
 }
 
-extension Date {
-    func timeAgoDisplay() -> String {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .short
-        return formatter.localizedString(for: self, relativeTo: Date())
+private extension ViewController {
+    func makeViewModels(_ articles: [Article]) -> [ArticleViewModel] {
+        return articles.map { article in
+            let id = article.id
+            let source = Source(id: article.source.id ?? "No id", name: article.source.name ?? "No name")
+            
+            var authorLabelText = article.author?.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression, range: nil) ?? "\(source.name ?? "No name") Team"
+            if authorLabelText.isEmpty {
+                authorLabelText = "\(source.name ?? "No name") Team"
+            }
+            
+            let author = authorLabelText
+            
+            let title = article.title
+            let description = article.description ?? "No description"
+            let url = article.url ?? "No URL"
+            let urlToImage = article.urlToImage ?? "No URL to Image"
+            
+            let image = UIImage(named: "placeholder")
+            
+            let publishedAt = article.publishedAt ?? "No date"
+            
+            let dateFormatter = DateFormatter()
+            dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+            let date = dateFormatter.date(from: publishedAt)
+            
+            let publishedAgo = date?.timeAgoDisplay() ?? "? hr ago"
+            
+            let content = article.content?.components(separatedBy: "[")[0] ?? "No content"
+            
+            return ArticleViewModel(id: id, source: source, author: author, title: title, description: description, url: url, urlToImage: urlToImage, image: image!, publishedAt: publishedAt, publishedAgo: publishedAgo, content: content)
+        }
     }
 }

@@ -13,7 +13,7 @@ class ExploreCollectionViewCell: UICollectionViewCell {
     
     static let reuseId = "ExploreCollectionViewCell"
     
-    var article: Article? = nil {
+    /*var article: Article? = nil {
         didSet {
             
             if let article = article {
@@ -37,6 +37,20 @@ class ExploreCollectionViewCell: UICollectionViewCell {
                 
             }
             // Update views here
+        }
+    }*/
+    
+    var viewModel: ArticleViewModel? = nil {
+        didSet {
+            if let viewModel = viewModel {
+                sourceLabel.text = viewModel.source.name?.uppercased()
+                titleLabel.text = viewModel.title
+                authorLabel.text = viewModel.author
+                if viewModel.urlToImage != "No URL to Image" {
+                    imageView.af.setImage(withURL: URL(string: viewModel.urlToImage)!, placeholderImage: UIImage(named: "placeholder"))
+                }
+                publishedAtLabel.text = viewModel.publishedAgo
+            }
         }
     }
     

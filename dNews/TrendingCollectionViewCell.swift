@@ -13,33 +13,19 @@ class TrendingCollectionViewCell: UICollectionViewCell {
     
     static let reuseId = "TrendingCollectionViewCell"
     
-    var article: Article? = nil {
+    var viewModel: ArticleViewModel? = nil {
         didSet {
-            
-            if let article = article {
-                //imageView.image = UIImage(data: fetchImageFromURL(article.urlToImage))
-                sourceLabel.text = article.source.name?.uppercased()
-                titleLabel.text = article.title//.components(separatedBy: "-")[0]
-                authorLabel.text = article.author?.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression, range: nil) ?? "\(article.source.name!) Team"
-                            
-                getImage(for: article.urlToImage ?? "noImage")
-                
-                let dateFormatter = DateFormatter()
-                dateFormatter.locale = Locale(identifier: "en_US_POSIX") // set locale to reliable US_POSIX
-                dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-                let date = dateFormatter.date(from:article.publishedAt!)!
-                
-                publishedAtLabel.text = date.timeAgoDisplay()
+            if let viewModel = viewModel {
+                sourceLabel.text = viewModel.source.name?.uppercased()
+                titleLabel.text = viewModel.title
+                authorLabel.text = viewModel.author
+                if viewModel.urlToImage != "No URL to Image" {
+                    imageView.af.setImage(withURL: URL(string: viewModel.urlToImage)!, placeholderImage: UIImage(named: "placeholder"))
+                }
+                publishedAtLabel.text = viewModel.publishedAgo
             }
-            
-            // Update views here
         }
     }
-    
-    
-    
-    //func configure(with)
-    
     
     let cardView: UIView = {
         let cardView = UIView()
@@ -116,18 +102,17 @@ class TrendingCollectionViewCell: UICollectionViewCell {
         
         contentView.addSubview(cardView)
         cardView.snp.makeConstraints { make in
-            make.top.leading.trailing.bottom.equalToSuperview()
+            make.edges.equalToSuperview()
         }
         
         cardView.addSubview(imageView)
         imageView.frame = cardView.bounds
         imageView.snp.makeConstraints { make in
-            make.top.leading.trailing.bottom.equalToSuperview()
+            make.edges.equalToSuperview()
         }
         
         imageView.addSubview(publishedAtLabel)
         publishedAtLabel.snp.makeConstraints { make in
-            //make.firstBaseline.equalTo(authorLabel.snp.firstBaseline)
             make.bottom.equalToSuperview().inset(20)
             make.trailing.equalToSuperview().inset(20)
         }
@@ -169,18 +154,6 @@ class TrendingCollectionViewCell: UICollectionViewCell {
         cardMaskLayer.frame = cardView.layer.bounds
         cardMaskLayer.path = cardRoundPath.cgPath
         cardView.layer.mask = cardMaskLayer
-        
-        /*let cardShadowLayer = CAShapeLayer()
-        cardShadowLayer.path = cardRoundPath.cgPath
-        cardShadowLayer.frame = cardView.layer.bounds
-        cardView.layer.backgroundColor = UIColor.clear.cgColor
-        cardView.layer.insertSublayer(cardShadowLayer, at: 0)
-        cardShadowLayer.backgroundColor = UIColor.clear.cgColor
-        cardShadowLayer.shadowOffset = .zero
-        cardShadowLayer.shadowColor = UIColor.tertiarySystemFill.cgColor
-        cardShadowLayer.shadowRadius = 8
-        cardShadowLayer.shadowOpacity = 0.6
-        cardShadowLayer.shadowPath = cardRoundPath.cgPath*/
     }
     
     override func prepareForReuse() {
@@ -188,37 +161,8 @@ class TrendingCollectionViewCell: UICollectionViewCell {
         self.imageView.image = UIImage(named: "placeholder")
     }
     
-    private func loadImage(for url: URL) {
-        let dataTask = URLSession.shared.dataTask(with: url) { data, response, error in
-            guard
-                error == nil, (response as? HTTPURLResponse)?.statusCode == 200,
-                let data = data
-            else {
-                print("❗️Network error – \(error!)")
-                return
-            }
-            DispatchQueue.main.async() { [weak self] in
-                self?.imageView.image = UIImage(data: data)
-            }
-        }
-        dataTask.resume()
-    }
-    
-    private func getImage(for url: String) {
-        AF.request(url)
-            .responseImage { response in
-                if case .success(let image) = response.result {
-                    self.imageView.image = image
-                } else {
-                    self.imageView.image = UIImage(named: "placeholder")
-                }
-            }
-    }
-    
-    
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
-
     
 }
