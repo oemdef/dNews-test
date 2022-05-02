@@ -10,7 +10,7 @@ import SnapKit
 import Alamofire
 
 class ViewController: UIViewController {
-
+    
     var newArticles = [Article]()
     var viewModels = [ArticleViewModel]()
     var sections = [DSection]()
