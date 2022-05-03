@@ -116,6 +116,8 @@ class TrendingCollectionViewCell: UICollectionViewCell {
             make.bottom.equalToSuperview().inset(20)
             make.trailing.equalToSuperview().inset(20)
         }
+        publishedAtLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        publishedAtLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         
         imageView.addSubview(authorLabel)
         authorLabel.snp.makeConstraints { make in

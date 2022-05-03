@@ -69,7 +69,13 @@ class ViewController: UIViewController {
     func createSectionHeader() -> NSCollectionLayoutBoundarySupplementaryItem {
         let layoutSectionHeaderSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(1))
         let layoutSectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: layoutSectionHeaderSize, elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
-        layoutSectionHeader.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
+        
+        if #available(iOS 14.0, *) {
+            layoutSectionHeader.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
+        } else {
+            layoutSectionHeader.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
+        }
+        
         return layoutSectionHeader
     }
     
@@ -161,7 +167,7 @@ class ViewController: UIViewController {
         request
             .validate()
             .responseDecodable(of: NewsResponse.self) { (response) in
-                //print(response)
+                
                 guard let topHeadlines = response.value else { return }
                 
                 self.nextPageToLoad += 1

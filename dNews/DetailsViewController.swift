@@ -28,9 +28,8 @@ class DetailsViewController: UIViewController {
     }
     
     let containerView = UIView()
-        
-    let scrollView = UIScrollView()
-    let openSafariButton = UIButton()
+    
+    var openSafariButton = UIButton()
     
     let imageView: UIImageView = {
         let imageView = UIImageView()
@@ -104,40 +103,7 @@ class DetailsViewController: UIViewController {
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: UIFont.labelFontSize, weight: .heavy)]
         self.navigationItem.largeTitleDisplayMode = .never
         
-        var config = UIButton.Configuration.filled()
-        config.buttonSize = .large
-        config.cornerStyle = .large
-        
-        config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
-          var outgoing = incoming
-          outgoing.font = UIFont.preferredFont(forTextStyle: .headline)
-          return outgoing
-        }
-        config.title = "Read more on the Web"
-        config.image = UIImage(systemName: "chevron.right")
-        config.imagePadding = 5
-        config.imagePlacement = .trailing
-        config.preferredSymbolConfigurationForImage
-          = UIImage.SymbolConfiguration(scale: .medium)
-        openSafariButton.configuration = config
-        
-        openSafariButton.addAction(
-            UIAction {_ in
-                guard let link = URL(string: self.viewModel!.url) else {
-                  print("Invalid link")
-                  return
-                }
-                let safariViewController = SFSafariViewController(url: link)
-                self.present(safariViewController, animated: true, completion: nil)
-            }, for: .touchUpInside)
-        
-        
-        view.addSubview(openSafariButton)
-        openSafariButton.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(40)
-            make.height.equalTo(60)
-            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(16)
-        }
+        configureButton()
         
         view.addSubview(contentLabel)
         contentLabel.snp.makeConstraints { make in
@@ -150,6 +116,8 @@ class DetailsViewController: UIViewController {
             make.bottom.equalTo(contentLabel.snp.top).offset(-20)
             make.trailing.equalToSuperview().inset(20)
         }
+        publishedAtLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        publishedAtLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         
         view.addSubview(authorLabel)
         authorLabel.snp.makeConstraints { make in
@@ -214,4 +182,68 @@ extension DetailsViewController: SFSafariViewControllerDelegate {
   func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
     controller.dismiss(animated: true, completion: nil)
   }
+}
+    
+extension DetailsViewController {
+      func configureButton() {
+          
+          if #available(iOS 15.0, *) {
+              var config = UIButton.Configuration.filled()
+              config.buttonSize = .large
+              config.cornerStyle = .large
+              config.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { incoming in
+                  var outgoing = incoming
+                  outgoing.font = UIFont.preferredFont(forTextStyle: .headline)
+                  return outgoing
+              }
+              config.title = "Read more on the Web"
+              config.image = UIImage(systemName: "safari")
+              config.imagePadding = 5
+              config.imagePlacement = .trailing
+              config.preferredSymbolConfigurationForImage
+              = UIImage.SymbolConfiguration(scale: .medium)
+              openSafariButton.configuration = config
+          } else {
+              openSafariButton = UIButton(type: .roundedRect)
+              openSafariButton.setTitle(" Read more on the Web", for: .normal)
+              
+              let buttonImageConfig = UIImage.SymbolConfiguration(pointSize: 17, weight: .semibold, scale: .medium)
+              let buttonImage = UIImage(systemName: "safari", withConfiguration: buttonImageConfig)
+              openSafariButton.setImage(buttonImage, for: .normal)
+              
+              openSafariButton.backgroundColor = .systemBlue
+              openSafariButton.tintColor = .white
+              openSafariButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
+              openSafariButton.layer.cornerRadius = 17
+              openSafariButton.layer.cornerCurve = .continuous
+              
+          }
+          
+          if #available(iOS 14.0, *) {
+              openSafariButton.addAction(
+                UIAction {_ in
+                    self.handleButtonPress()
+                }, for: .touchUpInside)
+          } else {
+              openSafariButton.addAction(for: .touchUpInside) { [unowned self] in
+                  self.handleButtonPress()
+              }
+          }
+        
+          view.addSubview(openSafariButton)
+          openSafariButton.snp.makeConstraints { make in
+              make.leading.trailing.equalToSuperview().inset(40)
+              make.height.equalTo(60)
+              make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(16)
+          }
+      }
+    
+    func handleButtonPress() {
+        guard let link = URL(string: self.viewModel!.url) else {
+            print("Invalid link")
+            return
+        }
+        let safariViewController = SFSafariViewController(url: link)
+        self.present(safariViewController, animated: true, completion: nil)
+    }
 }
