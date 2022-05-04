@@ -29,7 +29,7 @@ class TrendingCollectionViewCell: UICollectionViewCell {
     
     let cardView: UIView = {
         let cardView = UIView()
-        cardView.backgroundColor = .systemFill
+        cardView.backgroundColor = ColorCompatibility.systemFill
         cardView.translatesAutoresizingMaskIntoConstraints = false
         return cardView
     }()
@@ -45,7 +45,12 @@ class TrendingCollectionViewCell: UICollectionViewCell {
     }()
     
     let blurredEffectView: UIVisualEffectView = {
-        let blurEffect = UIBlurEffect(style: .systemChromeMaterialDark)
+        var blurEffect = UIBlurEffect()
+        if #available(iOS 13.0, *) {
+            blurEffect = UIBlurEffect(style: .systemChromeMaterialDark)
+        } else {
+            blurEffect = UIBlurEffect(style: .dark)
+        }
         let blurredEffectView = UIVisualEffectView(frame: .zero)
         blurredEffectView.effect = blurEffect
         return blurredEffectView
@@ -116,8 +121,8 @@ class TrendingCollectionViewCell: UICollectionViewCell {
             make.bottom.equalToSuperview().inset(20)
             make.trailing.equalToSuperview().inset(20)
         }
-        publishedAtLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        publishedAtLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        //publishedAtLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        //publishedAtLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         
         imageView.addSubview(authorLabel)
         authorLabel.snp.makeConstraints { make in

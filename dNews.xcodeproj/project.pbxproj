@@ -17,6 +17,10 @@
 		754B5D312820118C004CA879 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754B5D302820118C004CA879 /* Date.swift */; };
 		754B5D33282011CE004CA879 /* ArticleViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754B5D32282011CE004CA879 /* ArticleViewModel.swift */; };
 		754B5D3A2821DFE8004CA879 /* UIControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754B5D392821DFE8004CA879 /* UIControl.swift */; };
+		754B5D4028227FC2004CA879 /* IBPCollectionViewCompositionalLayoutInteroperability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754B5D3F28227FC2004CA879 /* IBPCollectionViewCompositionalLayoutInteroperability.swift */; };
+		754B5D422822817D004CA879 /* ColorCompatibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 754B5D412822817D004CA879 /* ColorCompatibility.swift */; };
+		754B5D452822876D004CA879 /* DiffableDataSources in Frameworks */ = {isa = PBXBuildFile; productRef = 754B5D442822876D004CA879 /* DiffableDataSources */; };
+		754B5D4C2822B49D004CA879 /* IBPCollectionViewCompositionalLayout in Frameworks */ = {isa = PBXBuildFile; productRef = 754B5D4B2822B49D004CA879 /* IBPCollectionViewCompositionalLayout */; };
 		757AA6C82817D25600ECED5A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757AA6C72817D25600ECED5A /* AppDelegate.swift */; };
 		757AA6CA2817D25600ECED5A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757AA6C92817D25600ECED5A /* SceneDelegate.swift */; };
 		757AA6CC2817D25600ECED5A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757AA6CB2817D25600ECED5A /* ViewController.swift */; };
@@ -37,6 +41,9 @@
 		754B5D302820118C004CA879 /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		754B5D32282011CE004CA879 /* ArticleViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleViewModel.swift; sourceTree = "<group>"; };
 		754B5D392821DFE8004CA879 /* UIControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIControl.swift; sourceTree = "<group>"; };
+		754B5D3F28227FC2004CA879 /* IBPCollectionViewCompositionalLayoutInteroperability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IBPCollectionViewCompositionalLayoutInteroperability.swift; sourceTree = "<group>"; };
+		754B5D412822817D004CA879 /* ColorCompatibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorCompatibility.swift; sourceTree = "<group>"; };
+		754B5D482822B43C004CA879 /* IBPCollectionViewCompositionalLayout */ = {isa = PBXFileReference; lastKnownFileType = text; path = IBPCollectionViewCompositionalLayout; sourceTree = SOURCE_ROOT; };
 		757AA6C42817D25600ECED5A /* dNews.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = dNews.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		757AA6C72817D25600ECED5A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		757AA6C92817D25600ECED5A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -53,6 +60,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				757AA6FA2817F50500ECED5A /* SnapKit in Frameworks */,
+				754B5D4C2822B49D004CA879 /* IBPCollectionViewCompositionalLayout in Frameworks */,
+				754B5D452822876D004CA879 /* DiffableDataSources in Frameworks */,
 				757AA6FD2817F9F000ECED5A /* Alamofire in Frameworks */,
 				754B5CD1281D8FAE004CA879 /* AlamofireImage in Frameworks */,
 			);
@@ -70,11 +79,28 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		754B5D3E28227FA3004CA879 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				754B5D3F28227FC2004CA879 /* IBPCollectionViewCompositionalLayoutInteroperability.swift */,
+				754B5D412822817D004CA879 /* ColorCompatibility.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		754B5D4A2822B49D004CA879 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		757AA6BB2817D25600ECED5A = {
 			isa = PBXGroup;
 			children = (
 				757AA6C62817D25600ECED5A /* dNews */,
 				757AA6C52817D25600ECED5A /* Products */,
+				754B5D4A2822B49D004CA879 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -99,7 +125,9 @@
 				754B5CCB281D788E004CA879 /* ExploreCollectionViewCell.swift */,
 				754B5CD2281DC4C9004CA879 /* DetailsViewController.swift */,
 				754B5D0B281FEA13004CA879 /* URLFactory.swift */,
+				754B5D3E28227FA3004CA879 /* Helpers */,
 				754B5D2F28201184004CA879 /* Extensions */,
+				754B5D482822B43C004CA879 /* IBPCollectionViewCompositionalLayout */,
 				757AA6CD2817D25600ECED5A /* Main.storyboard */,
 				757AA6D02817D25800ECED5A /* Assets.xcassets */,
 				757AA6D22817D25800ECED5A /* LaunchScreen.storyboard */,
@@ -128,6 +156,8 @@
 				757AA6F92817F50500ECED5A /* SnapKit */,
 				757AA6FC2817F9F000ECED5A /* Alamofire */,
 				754B5CD0281D8FAE004CA879 /* AlamofireImage */,
+				754B5D442822876D004CA879 /* DiffableDataSources */,
+				754B5D4B2822B49D004CA879 /* IBPCollectionViewCompositionalLayout */,
 			);
 			productName = dNews;
 			productReference = 757AA6C42817D25600ECED5A /* dNews.app */;
@@ -161,6 +191,7 @@
 				757AA6F82817F50500ECED5A /* XCRemoteSwiftPackageReference "SnapKit" */,
 				757AA6FB2817F9F000ECED5A /* XCRemoteSwiftPackageReference "Alamofire" */,
 				754B5CCF281D8FAE004CA879 /* XCRemoteSwiftPackageReference "AlamofireImage" */,
+				754B5D432822876D004CA879 /* XCRemoteSwiftPackageReference "DiffableDataSources" */,
 			);
 			productRefGroup = 757AA6C52817D25600ECED5A /* Products */;
 			projectDirPath = "";
@@ -189,11 +220,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				754B5D4028227FC2004CA879 /* IBPCollectionViewCompositionalLayoutInteroperability.swift in Sources */,
 				754B5CC02819E870004CA879 /* ArticleModel.swift in Sources */,
 				754B5D312820118C004CA879 /* Date.swift in Sources */,
 				757AA6CC2817D25600ECED5A /* ViewController.swift in Sources */,
 				757AA6C82817D25600ECED5A /* AppDelegate.swift in Sources */,
 				754B5CC42819FBA5004CA879 /* TrendingCollectionViewCell.swift in Sources */,
+				754B5D422822817D004CA879 /* ColorCompatibility.swift in Sources */,
 				754B5D3A2821DFE8004CA879 /* UIControl.swift in Sources */,
 				757AA6CA2817D25600ECED5A /* SceneDelegate.swift in Sources */,
 				754B5D0C281FEA13004CA879 /* URLFactory.swift in Sources */,
@@ -276,7 +309,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -330,7 +363,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -356,7 +389,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -386,7 +419,7 @@
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -432,6 +465,14 @@
 				minimumVersion = 4.2.0;
 			};
 		};
+		754B5D432822876D004CA879 /* XCRemoteSwiftPackageReference "DiffableDataSources" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ra1028/DiffableDataSources.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.5.0;
+			};
+		};
 		757AA6F82817F50500ECED5A /* XCRemoteSwiftPackageReference "SnapKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SnapKit/SnapKit.git";
@@ -455,6 +496,15 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 754B5CCF281D8FAE004CA879 /* XCRemoteSwiftPackageReference "AlamofireImage" */;
 			productName = AlamofireImage;
+		};
+		754B5D442822876D004CA879 /* DiffableDataSources */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 754B5D432822876D004CA879 /* XCRemoteSwiftPackageReference "DiffableDataSources" */;
+			productName = DiffableDataSources;
+		};
+		754B5D4B2822B49D004CA879 /* IBPCollectionViewCompositionalLayout */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = IBPCollectionViewCompositionalLayout;
 		};
 		757AA6F92817F50500ECED5A /* SnapKit */ = {
 			isa = XCSwiftPackageProductDependency;

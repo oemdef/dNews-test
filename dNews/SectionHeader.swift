@@ -22,7 +22,7 @@ class SectionHeader: UICollectionReusableView {
     }
     
     private func customiseElements() {
-        title.textColor = .label
+        title.textColor = ColorCompatibility.label
         title.font = UIFont.systemFont(ofSize: 28, weight: .bold)
         title.translatesAutoresizingMaskIntoConstraints = false
     }

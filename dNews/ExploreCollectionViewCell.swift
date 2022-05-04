@@ -29,7 +29,7 @@ class ExploreCollectionViewCell: UICollectionViewCell {
     
     let cardView: UIView = {
         let cardView = UIView()
-        cardView.backgroundColor = .systemFill
+        cardView.backgroundColor = ColorCompatibility.systemFill
         cardView.translatesAutoresizingMaskIntoConstraints = false
         return cardView
     }()
@@ -101,7 +101,7 @@ class ExploreCollectionViewCell: UICollectionViewCell {
         cardView.addSubview(publishedAtLabel)
         cardView.addSubview(authorLabel)
         
-        publishedAtLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        //publishedAtLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         
         publishedAtLabel.snp.makeConstraints { make in
             make.bottom.equalToSuperview().inset(10)

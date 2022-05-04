@@ -97,7 +97,7 @@ class DetailsViewController: UIViewController {
         
         self.navigationController?.modalPresentationCapturesStatusBarAppearance = true
 
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = ColorCompatibility.systemBackground
         
         self.navigationItem.title = viewModel?.source.name!.uppercased()
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: UIFont.labelFontSize, weight: .heavy)]
@@ -207,15 +207,25 @@ extension DetailsViewController {
               openSafariButton = UIButton(type: .roundedRect)
               openSafariButton.setTitle(" Read more on the Web", for: .normal)
               
-              let buttonImageConfig = UIImage.SymbolConfiguration(pointSize: 17, weight: .semibold, scale: .medium)
-              let buttonImage = UIImage(systemName: "safari", withConfiguration: buttonImageConfig)
+              var buttonImage = UIImage()
+              
+              if #available(iOS 13.0, *) {
+                  let buttonImageConfig = UIImage.SymbolConfiguration(pointSize: 17, weight: .semibold, scale: .medium)
+                  buttonImage = UIImage(systemName: "safari", withConfiguration: buttonImageConfig)!
+              } else {
+                  buttonImage = UIImage(named: "safari")!
+              }
+              
               openSafariButton.setImage(buttonImage, for: .normal)
               
               openSafariButton.backgroundColor = .systemBlue
               openSafariButton.tintColor = .white
               openSafariButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
               openSafariButton.layer.cornerRadius = 17
-              openSafariButton.layer.cornerCurve = .continuous
+              
+              if #available(iOS 13.0, *) {
+                  openSafariButton.layer.cornerCurve = .continuous
+              }
               
           }
           
