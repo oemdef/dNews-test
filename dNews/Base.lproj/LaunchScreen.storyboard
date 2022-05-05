@@ -1,8 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13122.16" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13104.12"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -11,10 +14,41 @@
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" xcode11CocoaTouchSystemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleAspectFit" verticalHuggingPriority="900" alignment="center" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="mPF-GW-Swm">
+                                <rect key="frame" x="20" y="219.5" width="374" height="467"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="300" verticalHuggingPriority="300" horizontalCompressionResistancePriority="249" verticalCompressionResistancePriority="249" image="launchicon" translatesAutoresizingMaskIntoConstraints="NO" id="pRV-fm-kPP">
+                                        <rect key="frame" x="0.0" y="20" width="102.5" height="427"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="pRV-fm-kPP" secondAttribute="height" multiplier="1:1" priority="200" id="QHm-Xg-BSw"/>
+                                        </constraints>
+                                        <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="small"/>
+                                    </imageView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="999" verticalHuggingPriority="251" horizontalCompressionResistancePriority="998" text="dNews" textAlignment="center" lineBreakMode="tailTruncation" minimumScaleFactor="0.20000000000000001" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="HvJ-3H-mwv">
+                                        <rect key="frame" x="118.5" y="162" width="255.5" height="143.5"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="120"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="pRV-fm-kPP" firstAttribute="top" secondItem="mPF-GW-Swm" secondAttribute="top" constant="20" id="7zi-fP-0zk"/>
+                                    <constraint firstAttribute="bottom" secondItem="pRV-fm-kPP" secondAttribute="bottom" constant="20" id="Blf-Kl-ZOU"/>
+                                    <constraint firstItem="pRV-fm-kPP" firstAttribute="width" secondItem="HvJ-3H-mwv" secondAttribute="width" multiplier="0.4" id="hzN-6A-bAW"/>
+                                </constraints>
+                            </stackView>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="mPF-GW-Swm" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="4Wt-eO-BMW"/>
+                            <constraint firstItem="mPF-GW-Swm" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="J1T-qi-Gg7"/>
+                            <constraint firstItem="mPF-GW-Swm" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="XYs-3U-Bef"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="mPF-GW-Swm" secondAttribute="trailing" constant="20" id="kcP-a9-rlO"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -22,4 +56,10 @@
             <point key="canvasLocation" x="53" y="375"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="launchicon" width="427" height="427"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
 </document>
