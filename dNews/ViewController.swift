@@ -254,6 +254,28 @@ private extension ViewController {
             .validate()
             .responseDecodable(of: NewsResponse.self) { (response) in
                 
+                // MARK: – Error handling
+                if let afError = response.error?.asAFError {
+                    if afError.isSessionTaskError {
+                        if self.initialLoad {
+                            self.showOfflineAlert(whereFrom: "getArticlesNoInternetOnLaunch")
+                            self.currentlyLoading = false
+                            return
+                        } else {
+                            self.showOfflineAlert(whereFrom: "getArticlesNoInternet")
+                            self.currentlyLoading = false
+                            return
+                        }
+                    }
+                }
+                
+                if response.value == nil {
+                    self.showOfflineAlert(whereFrom: "getArticlesEmpty")
+                    self.currentlyLoading = false
+                    return
+                }
+                
+                // MARK: – Response handling
                 guard let topHeadlines = response.value else { return }
                 
                 self.nextPageToLoad += 1
@@ -308,6 +330,51 @@ private extension ViewController {
             }
         } else {
             sections[1].items.append(contentsOf: makeViewModels(newArticles))
+        }
+    }
+}
+
+// MARK: – No internet alert
+
+extension ViewController {
+    
+    func showOfflineAlert(whereFrom: String) {
+        switch whereFrom {
+        case "getArticlesNoInternetOnLaunch":
+            DispatchQueue.main.async {
+                let alertController = UIAlertController(title: "No connection", message: "There was a problem with your Internet connection", preferredStyle: .alert)
+                let actionRetry = UIAlertAction(title: "Try Again", style: .default) { (retry) in
+                    self.getArticles()
+                }
+                alertController.addAction(actionRetry)
+                self.present(alertController, animated: true, completion: nil)
+            }
+        case "getArticlesNoInternet":
+            DispatchQueue.main.async {
+                let alertController = UIAlertController(title: "No connection", message: "There was a problem with your Internet connection", preferredStyle: .alert)
+                let actionRetry = UIAlertAction(title: "Try Again", style: .default) { (retry) in
+                    self.getArticles()
+                }
+                let actionCancel = UIAlertAction(title: "Cancel", style: .default) { (cancel) in
+                }
+                alertController.addAction(actionRetry)
+                alertController.addAction(actionCancel)
+                self.present(alertController, animated: true, completion: nil)
+            }
+        case "getArticlesEmpty":
+            DispatchQueue.main.async {
+                let alertController = UIAlertController(title: "No more trending stories", message: "NEWS API returned an empty data array. There is either no more trending stories now, or an API error has occurred.", preferredStyle: .alert)
+                let actionOK = UIAlertAction(title: "Got it", style: .default)
+                alertController.addAction(actionOK)
+                self.present(alertController, animated: true, completion: nil)
+            }
+        default:
+            DispatchQueue.main.async {
+                let alertController = UIAlertController(title: "Something went wrong", message: "Triggered default in switch-case showOfflineAlert", preferredStyle: .alert)
+                let actionOK = UIAlertAction(title: "That's interesting", style: .default)
+                alertController.addAction(actionOK)
+                self.present(alertController, animated: true, completion: nil)
+            }
         }
     }
 }
