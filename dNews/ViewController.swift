@@ -53,7 +53,6 @@ class ViewController: UIViewController {
     func setupCollectionView() {
         print("setupCollectionView")
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createCompositionalLayout())
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         collectionView.backgroundColor = ColorCompatibility.systemBackground
         
