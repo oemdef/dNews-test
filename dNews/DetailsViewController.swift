@@ -179,7 +179,7 @@ class DetailsViewController: UIViewController {
     
     func reconstraint() {
         if marginConst != nil {
-            openSafariButton.snp.updateConstraints { make in
+            openSafariButton.snp.remakeConstraints { make in
                 make.leading.trailing.equalToSuperview().inset(marginConst! * 2)
                 make.height.equalTo(marginConst! * 3)
                 make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(marginConst! * 0.8)
@@ -189,32 +189,38 @@ class DetailsViewController: UIViewController {
                 make.leading.trailing.equalToSuperview().inset(marginConst!)
                 make.bottom.equalTo(openSafariButton.snp.top).offset(-marginConst!)
             }
-            contentLabel.setContentCompressionResistancePriority(.required+1, for: .vertical)
+            contentLabel.setContentCompressionResistancePriority(.required+2, for: .vertical)
+            contentLabel.setContentHuggingPriority(.required+1, for: .vertical)
+
             
             authorLabel.snp.updateConstraints { make in
                 make.leading.equalToSuperview().inset(marginConst!)
                 make.bottom.equalTo(contentLabel.snp.top).offset(-marginConst!)
             }
-            authorLabel.setContentCompressionResistancePriority(.required+1, for: .vertical)
-            
+            authorLabel.setContentCompressionResistancePriority(.required+2, for: .vertical)
+            authorLabel.setContentHuggingPriority(.required+1, for: .vertical)
+
             publishedAtLabel.snp.updateConstraints { make in
                 make.bottom.equalTo(contentLabel.snp.top).offset(-marginConst!)
                 make.trailing.equalToSuperview().inset(marginConst!)
                 make.leading.equalTo(authorLabel.snp.trailing).offset(marginConst! * 0.6).priority(.high)
             }
             publishedAtLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-            publishedAtLabel.setContentCompressionResistancePriority(.required+1, for: .vertical)
+            publishedAtLabel.setContentCompressionResistancePriority(.required+2, for: .vertical)
+            publishedAtLabel.setContentHuggingPriority(.required+1, for: .vertical)
         
             titleLabel.snp.updateConstraints { make in
                 make.leading.trailing.equalToSuperview().inset(marginConst!)
                 make.bottom.equalTo(authorLabel.snp.top).offset(-marginConst! * 0.3)
             }
-            titleLabel.setContentCompressionResistancePriority(.required+1, for: .vertical)
+            titleLabel.setContentCompressionResistancePriority(.required+2, for: .vertical)
+            titleLabel.setContentHuggingPriority(.required+1, for: .vertical)
+
 
             containerView.snp.updateConstraints { make in
                 make.bottom.equalTo(titleLabel.snp.top).offset(-marginConst!)
             }
-            containerView.setContentHuggingPriority(.required+1, for: .vertical)
+            //containerView.setContentHuggingPriority(.required+1, for: .vertical)
 
             
             containerView.layoutIfNeeded()

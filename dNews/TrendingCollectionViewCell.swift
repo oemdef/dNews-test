@@ -70,6 +70,7 @@ class TrendingCollectionViewCell: UICollectionViewCell {
         }
         let blurredEffectView = UIVisualEffectView(frame: .zero)
         blurredEffectView.effect = blurEffect
+        blurredEffectView.translatesAutoresizingMaskIntoConstraints = false
         return blurredEffectView
     }()
     
@@ -87,6 +88,7 @@ class TrendingCollectionViewCell: UICollectionViewCell {
         authorLabel.text = "Holly Ellyatt"
         authorLabel.textColor = .white
         authorLabel.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        authorLabel.translatesAutoresizingMaskIntoConstraints = false
         return authorLabel
     }()
     
@@ -96,6 +98,7 @@ class TrendingCollectionViewCell: UICollectionViewCell {
         publishedAtLabel.textColor = .white
         publishedAtLabel.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
         publishedAtLabel.textAlignment = .right
+        publishedAtLabel.translatesAutoresizingMaskIntoConstraints = false
         return publishedAtLabel
     }()
     
@@ -105,6 +108,7 @@ class TrendingCollectionViewCell: UICollectionViewCell {
         titleLabel.numberOfLines = 4
         titleLabel.font = UIFont.systemFont(ofSize: 24, weight: .heavy)
         titleLabel.textColor = .white
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
         return titleLabel
     }()
     
@@ -113,6 +117,7 @@ class TrendingCollectionViewCell: UICollectionViewCell {
         sourceLabel.text = "The Washington Post".uppercased()
         sourceLabel.textColor = .white
         sourceLabel.font = UIFont.systemFont(ofSize: 14, weight: .heavy)
+        sourceLabel.translatesAutoresizingMaskIntoConstraints = false
         return sourceLabel
     }()
     
