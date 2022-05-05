@@ -17,6 +17,9 @@ class ViewController: UIViewController {
     var viewModels = [ArticleViewModel]()
     var sections = [DSection]()
     
+    public var marginConst: CGFloat = 0
+    public var fontScaleConst: CGFloat = 0
+    
     private var nextPageToLoad = 1
     private var currentlyLoading = false
     private var initialLoad = true
@@ -28,20 +31,23 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        view.backgroundColor = ColorCompatibility.systemBackground
         
-        getArticles()
+        view.backgroundColor = ColorCompatibility.systemBackground
         
         self.navigationController?.navigationBar.topItem?.title = "dNews"
         self.navigationController?.navigationBar.prefersLargeTitles = true
         self.navigationController?.isNavigationBarHidden = false
-        //self.navigationController?.modalPresentationCapturesStatusBarAppearance = true
-        
+                
         if #available(iOS 13, *) { } else {
             self.navigationController?.navigationBar.shadowImage = UIImage()
         }
         
+        marginConst = self.navigationController!.systemMinimumLayoutMargins.leading
+        
+        let font = UIFont.preferredFont(forTextStyle: .largeTitle)
+        fontScaleConst = font.pointSize / 34
+        
+        getArticles()
     }
     
     func setupCollectionView() {
@@ -56,8 +62,6 @@ class ViewController: UIViewController {
         
         collectionView.register(TrendingCollectionViewCell.self, forCellWithReuseIdentifier: TrendingCollectionViewCell.reuseId)
         collectionView.register(ExploreCollectionViewCell.self, forCellWithReuseIdentifier: ExploreCollectionViewCell.reuseId)
-        
-        //collectionView.contentInset = UIEdgeInsets(top: 20, left: 0, bottom: 20, right: 0)
         
         collectionView.delegate = self
     }
@@ -81,17 +85,11 @@ class ViewController: UIViewController {
         if #available(iOS 14.0, *) {
             layoutSectionHeaderSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(1))
         } else {
-            layoutSectionHeaderSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(28))
+            layoutSectionHeaderSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(30 * fontScaleConst))
         }
         let layoutSectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: layoutSectionHeaderSize, elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
         
-        layoutSectionHeader.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
-        
-        /*if #available(iOS 14.0, *) {
-            layoutSectionHeader.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
-        } else {
-            layoutSectionHeader.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
-        }*/
+        layoutSectionHeader.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: marginConst, bottom: 0, trailing: marginConst)
         
         return layoutSectionHeader
     }
@@ -99,14 +97,14 @@ class ViewController: UIViewController {
     func createTopHeadlinesSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalWidth(1))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
-        item.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 20, bottom: 10, trailing: 20)
+        item.contentInsets = NSDirectionalEdgeInsets(top: marginConst/2, leading: marginConst, bottom: marginConst/2, trailing: marginConst)
         
         let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalWidth(1))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
         
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .groupPagingCentered
-        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 20, trailing: 0)
+        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: marginConst, trailing: 0)
         
         let header = createSectionHeader()
         section.boundarySupplementaryItems = [header]
@@ -117,7 +115,7 @@ class ViewController: UIViewController {
     func createExploreSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(0.37))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
-        item.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 20, bottom: 10, trailing: 20)
+        item.contentInsets = NSDirectionalEdgeInsets(top: marginConst/2, leading: marginConst, bottom: marginConst/2, trailing: marginConst)
         
         var groupSize: NSCollectionLayoutSize
         
@@ -142,10 +140,14 @@ class ViewController: UIViewController {
             case "topHeadlinesSection":
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrendingCollectionViewCell.reuseId, for: indexPath) as! TrendingCollectionViewCell
                 cell.viewModel = viewModel
+                cell.marginConst = self.marginConst
+                cell.fontScaleConst = self.fontScaleConst
                 return cell
             default:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ExploreCollectionViewCell.reuseId, for: indexPath) as! ExploreCollectionViewCell
                 cell.viewModel = viewModel
+                cell.marginConst = self.marginConst
+                cell.fontScaleConst = self.fontScaleConst
                 return cell
             }
         })
@@ -156,6 +158,7 @@ class ViewController: UIViewController {
             guard let firstArticle = self.dataSource?.itemIdentifier(for: indexPath) else { return nil }
             guard let section = self.dataSource?.snapshot().sectionIdentifier(containingItem: firstArticle) else { return nil }
             if section.title.isEmpty { return nil }
+            sectionHeader.title.font = UIFont.systemFont(ofSize: 28 * self.fontScaleConst, weight: .bold)
             sectionHeader.title.text = section.title
             return sectionHeader
         }
@@ -177,157 +180,14 @@ class ViewController: UIViewController {
     
 }
 
-/*class ViewController: UIViewController {
-    
-    var newArticles = [Article]()
-    var viewModels = [ArticleViewModel]()
-    var sections = [DSection]()
-    
-    private var nextPageToLoad = 1
-    private var currentlyLoading = false
-    private var initialLoad = true
-    private var collectionViewIsLoaded = false
-    
-    var collectionView: UICollectionView!
-    
-    var dataSource: UICollectionViewDiffableDataSource<DSection, ArticleViewModel>?
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        view.backgroundColor = ColorCompatibility.systemBackground
-        self.navigationController?.navigationBar.topItem?.title = "dNews"
-        self.navigationController?.navigationBar.prefersLargeTitles = true
-        self.navigationController?.isNavigationBarHidden = false
-        self.navigationController?.modalPresentationCapturesStatusBarAppearance = true
-        
-        getArticles()
-    }
-    
-    func setupCollectionView() {
-        print("setupCollectionView")
-        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createCompositionalLayout())
-        collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        collectionView.backgroundColor = ColorCompatibility.systemBackground
-        
-        view.addSubview(collectionView)
-        
-        collectionView.register(SectionHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: SectionHeader.reuseId)
-        
-        collectionView.register(TrendingCollectionViewCell.self, forCellWithReuseIdentifier: TrendingCollectionViewCell.reuseId)
-        collectionView.register(ExploreCollectionViewCell.self, forCellWithReuseIdentifier: ExploreCollectionViewCell.reuseId)
-        
-        collectionView.delegate = self
-    }
-    
-    func createCompositionalLayout() -> UICollectionViewLayout {
-        let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
-            let section = self.sections[sectionIndex]
-            switch section.type {
-            case "topHeadlinesSection":
-                return self.createTopHeadlinesSection()
-            default:
-                return self.createExploreSection()
-            }
-        }
-        
-        return layout
-    }
-    
-    func createSectionHeader() -> NSCollectionLayoutBoundarySupplementaryItem {
-        let layoutSectionHeaderSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .estimated(1))
-        let layoutSectionHeader = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: layoutSectionHeaderSize, elementKind: UICollectionView.elementKindSectionHeader, alignment: .top)
-        
-        if #available(iOS 14.0, *) {
-            layoutSectionHeader.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20)
-        } else {
-            layoutSectionHeader.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
-        }
-        
-        return layoutSectionHeader
-    }
-    
-    func createTopHeadlinesSection() -> NSCollectionLayoutSection {
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalWidth(1))
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
-        item.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 20, bottom: 10, trailing: 20)
-        
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1), heightDimension: .fractionalWidth(1))
-        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-        
-        let section = NSCollectionLayoutSection(group: group)
-        section.orthogonalScrollingBehavior = .groupPaging
-        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 20, trailing: 0)
-        
-        let header = createSectionHeader()
-        section.boundarySupplementaryItems = [header]
-        
-        return section
-    }
-    
-    func createExploreSection() -> NSCollectionLayoutSection {
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(0.37))
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
-        item.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 20, bottom: 10, trailing: 20)
-        
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(1))
-        let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
-
-        let section = NSCollectionLayoutSection(group: group)
-                
-        let header = createSectionHeader()
-        section.boundarySupplementaryItems = [header]
-        
-        return section
-    }
-    
-    func createDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<DSection, ArticleViewModel>(collectionView: collectionView, cellProvider: { collectionView, indexPath, viewModel in
-            switch self.sections[indexPath.section].type {
-            case "topHeadlinesSection":
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrendingCollectionViewCell.reuseId, for: indexPath) as! TrendingCollectionViewCell
-                cell.viewModel = viewModel
-                return cell
-            default:
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ExploreCollectionViewCell.reuseId, for: indexPath) as! ExploreCollectionViewCell
-                cell.viewModel = viewModel
-                return cell
-            }
-        })
-        
-        dataSource?.supplementaryViewProvider = {
-            collectionView, kind, indexPath in
-            guard let sectionHeader = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: SectionHeader.reuseId, for: indexPath) as? SectionHeader else { return nil }
-            guard let firstArticle = self.dataSource?.itemIdentifier(for: indexPath) else { return nil }
-            guard let section = self.dataSource?.snapshot().sectionIdentifier(containingItem: firstArticle) else { return nil }
-            if section.title.isEmpty { return nil }
-            sectionHeader.title.text = section.title
-            return sectionHeader
-        }
-    }
-    
-    func reloadData() {
-        collectionViewIsLoaded = false
-        var snapshot = NSDiffableDataSourceSnapshot<DSection, ArticleViewModel>()
-        
-        snapshot.appendSections(sections)
-        
-        for section in sections {
-            snapshot.appendItems(section.items, toSection: section)
-        }
-        
-        dataSource?.apply(snapshot)
-        collectionViewIsLoaded = true
-    }
-    
-}*/
-
 extension ViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     guard let selectedItem = dataSource?.itemIdentifier(for: indexPath) else { return }
         let detailsVC = DetailsViewController()
         detailsVC.viewModel = selectedItem
+        detailsVC.marginConst = marginConst
+        detailsVC.fontScaleConst = fontScaleConst
         navigationController?.pushViewController(detailsVC, animated: true)
     }
     
@@ -406,12 +266,20 @@ private extension ViewController {
                     self.createDataSource()
                 }
                 
+                let contentOffsetBeforeLoad = self.collectionView.contentOffset
+                
                 self.reloadData()
                 
                 if self.initialLoad {
                     self.collectionView.setContentOffset(CGPoint(x: 0, y: -self.view.safeAreaInsets.top), animated: false)
                 }
                 
+                if #available(iOS 13.0, *) {
+                    if !self.initialLoad {
+                        self.collectionView.setContentOffset(contentOffsetBeforeLoad, animated: false)
+                    }
+                }
+               
                 self.currentlyLoading = false
                 self.initialLoad = false
             }

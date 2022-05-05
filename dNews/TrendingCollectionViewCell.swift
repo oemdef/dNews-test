@@ -20,9 +20,26 @@ class TrendingCollectionViewCell: UICollectionViewCell {
                 titleLabel.text = viewModel.title
                 authorLabel.text = viewModel.author
                 if viewModel.urlToImage != "No URL to Image" {
+                    guard URL(string: viewModel.urlToImage) != nil else { return }
                     imageView.af.setImage(withURL: URL(string: viewModel.urlToImage)!, placeholderImage: UIImage(named: "placeholder"))
                 }
                 publishedAtLabel.text = viewModel.publishedAgo
+            }
+        }
+    }
+    
+    var fontScaleConst: CGFloat? = nil {
+        didSet {
+            if fontScaleConst != nil {
+                rescaleFont()
+            }
+        }
+    }
+    
+    var marginConst: CGFloat? = nil {
+        didSet {
+            if marginConst != nil {
+                reconstraint()
             }
         }
     }
@@ -99,46 +116,42 @@ class TrendingCollectionViewCell: UICollectionViewCell {
         return sourceLabel
     }()
     
-    
-    
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         contentView.addSubview(cardView)
+        cardView.addSubview(imageView)
+        imageView.addSubview(publishedAtLabel)
+        imageView.addSubview(authorLabel)
+        imageView.addSubview(titleLabel)
+        imageView.addSubview(sourceLabel)
+
         cardView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         
-        cardView.addSubview(imageView)
         imageView.frame = cardView.bounds
         imageView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
         
-        imageView.addSubview(publishedAtLabel)
-        publishedAtLabel.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().inset(20)
-            make.trailing.equalToSuperview().inset(20)
-        }
-        //publishedAtLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        //publishedAtLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
-        
-        imageView.addSubview(authorLabel)
         authorLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(20)
             make.bottom.equalToSuperview().inset(20)
-            make.trailing.equalTo(publishedAtLabel.snp.leading).offset(-14)
-            make.firstBaseline.equalTo(publishedAtLabel.snp.firstBaseline)
         }
         
-        imageView.addSubview(titleLabel)
+        publishedAtLabel.snp.makeConstraints { make in
+            make.bottom.equalToSuperview().inset(20)
+            make.trailing.equalToSuperview().inset(20)
+            make.leading.equalTo(authorLabel.snp.trailing).offset(14).priority(.high)
+        }
+        publishedAtLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        
         titleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(20)
             make.bottom.equalTo(authorLabel.snp.top).offset(-14)
         }
         
-        imageView.addSubview(sourceLabel)
         sourceLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().inset(20)
             make.bottom.equalTo(titleLabel.snp.top).offset(-6)
@@ -161,6 +174,49 @@ class TrendingCollectionViewCell: UICollectionViewCell {
         cardMaskLayer.frame = cardView.layer.bounds
         cardMaskLayer.path = cardRoundPath.cgPath
         cardView.layer.mask = cardMaskLayer
+    }
+    
+    convenience init (frame: CGRect, passedMarginsConst: CGFloat, passedFontScaleConst: CGFloat) {
+        self.init(frame: frame)
+        self.marginConst = passedMarginsConst
+        self.fontScaleConst = passedFontScaleConst
+        rescaleFont()
+        reconstraint()
+    }
+    
+    func rescaleFont() {
+        if fontScaleConst != nil {
+            authorLabel.font = UIFont.systemFont(ofSize: 16 * fontScaleConst!, weight: .bold)
+            publishedAtLabel.font = UIFont.systemFont(ofSize: 16 * fontScaleConst!, weight: .semibold)
+            titleLabel.font = UIFont.systemFont(ofSize: 24 * fontScaleConst!, weight: .heavy)
+            sourceLabel.font = UIFont.systemFont(ofSize: 14 * fontScaleConst!, weight: .heavy)
+        }
+    }
+    
+    func reconstraint() {
+        if marginConst != nil {
+            authorLabel.snp.updateConstraints { make in
+                make.leading.equalToSuperview().inset(marginConst!)
+                make.bottom.equalToSuperview().inset(marginConst!)
+            }
+            
+            publishedAtLabel.snp.updateConstraints { make in
+                make.bottom.equalToSuperview().inset(marginConst!)
+                make.trailing.equalToSuperview().inset(marginConst!)
+                make.leading.equalTo(authorLabel.snp.trailing).offset(marginConst! * 0.7).priority(.high)
+            }
+            publishedAtLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+            
+            titleLabel.snp.updateConstraints { make in
+                make.leading.trailing.equalToSuperview().inset(marginConst!)
+                make.bottom.equalTo(authorLabel.snp.top).offset(-marginConst! * 0.7)
+            }
+            
+            sourceLabel.snp.updateConstraints { make in
+                make.leading.equalToSuperview().inset(marginConst!)
+                make.bottom.equalTo(titleLabel.snp.top).offset(-marginConst! * 0.3)
+            }
+        }
     }
     
     override func prepareForReuse() {

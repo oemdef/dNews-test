@@ -19,10 +19,28 @@ class DetailsViewController: UIViewController {
                 titleLabel.text = viewModel.title
                 authorLabel.text = viewModel.author
                 if viewModel.urlToImage != "No URL to Image" {
+                    guard URL(string: viewModel.urlToImage) != nil else { return }
                     imageView.af.setImage(withURL: URL(string: viewModel.urlToImage)!, placeholderImage: UIImage(named: "placeholder"))
                 }
                 publishedAtLabel.text = viewModel.publishedAgo
                 contentLabel.text = viewModel.content
+            }
+        }
+    }
+    
+    var fontScaleConst: CGFloat? = nil {
+        didSet {
+            if fontScaleConst != nil {
+                rescaleFont()
+            }
+        }
+    }
+    
+    var marginConst: CGFloat? = nil {
+        didSet {
+            if marginConst != nil {
+                configureButton()
+                reconstraint()
             }
         }
     }
@@ -53,7 +71,7 @@ class DetailsViewController: UIViewController {
         let publishedAtLabel = UILabel()
         publishedAtLabel.text = "4h ago"
         publishedAtLabel.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
-        publishedAtLabel.textAlignment = .right
+        publishedAtLabel.textAlignment = .natural
         publishedAtLabel.translatesAutoresizingMaskIntoConstraints = false
         return publishedAtLabel
     }()
@@ -62,7 +80,7 @@ class DetailsViewController: UIViewController {
         let titleLabel = UILabel()
         titleLabel.text = "The threat of nuclear war is real, top Russian official says; U.S. wants to see Moscow ‘weakened’"// - CNBC"
         titleLabel.numberOfLines = 4
-        titleLabel.font = UIFont.systemFont(ofSize: 28, weight: .heavy)
+        titleLabel.font = UIFont.systemFont(ofSize: 26, weight: .heavy)
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         return titleLabel
     }()
@@ -106,40 +124,35 @@ class DetailsViewController: UIViewController {
         configureButton()
         
         view.addSubview(contentLabel)
+        view.addSubview(publishedAtLabel)
+        view.addSubview(authorLabel)
+        view.addSubview(titleLabel)
+        view.addSubview(containerView)
+        containerView.addSubview(imageView)
+        
         contentLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(20)
             make.bottom.equalTo(openSafariButton.snp.top).offset(-20)
         }
         
-        view.addSubview(publishedAtLabel)
+        authorLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(20)
+            make.bottom.equalTo(contentLabel.snp.top).offset(-20)
+            //make.bottom.equalToSuperview().inset(20)
+        }
+        
         publishedAtLabel.snp.makeConstraints { make in
             make.bottom.equalTo(contentLabel.snp.top).offset(-20)
             make.trailing.equalToSuperview().inset(20)
+            make.leading.equalTo(authorLabel.snp.trailing).offset(14).priority(.high)
         }
-        publishedAtLabel.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        publishedAtLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
-        
-        view.addSubview(authorLabel)
-        authorLabel.snp.makeConstraints { make in
-            make.leading.equalToSuperview().inset(20)
-            make.trailing.equalTo(publishedAtLabel.snp.leading).offset(-14)
-            make.firstBaseline.equalTo(publishedAtLabel.snp.firstBaseline)
-        }
-        
-        view.addSubview(titleLabel)
+        publishedAtLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+    
         titleLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(20)
             make.bottom.equalTo(authorLabel.snp.top).offset(-14)
         }
-        
-        /*view.addSubview(sourceLabel)
-        sourceLabel.snp.makeConstraints { make in
-            make.bottom.equalTo(titleLabel.snp.top).offset(-6)
-            make.leading.equalToSuperview().inset(20)
-            //make.top.equalTo(imageView.snp.bottom).offset(20)
-        }*/
-        
-        view.addSubview(containerView)
+
         containerView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)//.offset(20)
             make.leading.trailing.equalToSuperview()
@@ -147,35 +160,71 @@ class DetailsViewController: UIViewController {
         }
         
         containerView.layoutIfNeeded()
-
-        containerView.addSubview(imageView)
+        
         imageView.frame = containerView.bounds
         imageView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
+    }
+    
+    func rescaleFont() {
+        if fontScaleConst != nil {
+            authorLabel.font = UIFont.systemFont(ofSize: 16 * fontScaleConst!, weight: .bold)
+            publishedAtLabel.font = UIFont.systemFont(ofSize: 16 * fontScaleConst!, weight: .regular)
+            titleLabel.font = UIFont.systemFont(ofSize: 26 * fontScaleConst!, weight: .heavy)
+            sourceLabel.font = UIFont.systemFont(ofSize: 14 * fontScaleConst!, weight: .heavy)
+            contentLabel.font = UIFont.systemFont(ofSize: 16 * fontScaleConst!, weight: .regular)
+        }
+    }
+    
+    func reconstraint() {
+        if marginConst != nil {
+            openSafariButton.snp.updateConstraints { make in
+                make.leading.trailing.equalToSuperview().inset(marginConst! * 2)
+                make.height.equalTo(marginConst! * 3)
+                make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(marginConst! * 0.8)
+            }
+            
+            contentLabel.snp.updateConstraints { make in
+                make.leading.trailing.equalToSuperview().inset(marginConst!)
+                make.bottom.equalTo(openSafariButton.snp.top).offset(-marginConst!)
+            }
+            contentLabel.setContentCompressionResistancePriority(.required+1, for: .vertical)
+            
+            authorLabel.snp.updateConstraints { make in
+                make.leading.equalToSuperview().inset(marginConst!)
+                make.bottom.equalTo(contentLabel.snp.top).offset(-marginConst!)
+            }
+            authorLabel.setContentCompressionResistancePriority(.required+1, for: .vertical)
+            
+            publishedAtLabel.snp.updateConstraints { make in
+                make.bottom.equalTo(contentLabel.snp.top).offset(-marginConst!)
+                make.trailing.equalToSuperview().inset(marginConst!)
+                make.leading.equalTo(authorLabel.snp.trailing).offset(marginConst! * 0.6).priority(.high)
+            }
+            publishedAtLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+            publishedAtLabel.setContentCompressionResistancePriority(.required+1, for: .vertical)
         
-}
-    
+            titleLabel.snp.updateConstraints { make in
+                make.leading.trailing.equalToSuperview().inset(marginConst!)
+                make.bottom.equalTo(authorLabel.snp.top).offset(-marginConst! * 0.3)
+            }
+            titleLabel.setContentCompressionResistancePriority(.required+1, for: .vertical)
 
-    /*
-    // MARK: - Navigation
+            containerView.snp.updateConstraints { make in
+                make.bottom.equalTo(titleLabel.snp.top).offset(-marginConst!)
+            }
+            containerView.setContentHuggingPriority(.required+1, for: .vertical)
 
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+            
+            containerView.layoutIfNeeded()
+            
+            imageView.frame = containerView.bounds
+            imageView.snp.updateConstraints { make in
+                make.edges.equalToSuperview()
+            }
+        }
     }
-    */
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        setNeedsStatusBarAppearanceUpdate()
-    }
-    
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        .lightContent
-    }
-
 }
 
 extension DetailsViewController: SFSafariViewControllerDelegate {
@@ -186,7 +235,6 @@ extension DetailsViewController: SFSafariViewControllerDelegate {
     
 extension DetailsViewController {
       func configureButton() {
-          
           if #available(iOS 15.0, *) {
               var config = UIButton.Configuration.filled()
               config.buttonSize = .large

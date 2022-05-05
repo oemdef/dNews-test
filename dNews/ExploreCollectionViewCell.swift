@@ -20,9 +20,26 @@ class ExploreCollectionViewCell: UICollectionViewCell {
                 titleLabel.text = viewModel.title
                 authorLabel.text = viewModel.author
                 if viewModel.urlToImage != "No URL to Image" {
+                    guard URL(string: viewModel.urlToImage) != nil else { return }
                     imageView.af.setImage(withURL: URL(string: viewModel.urlToImage)!, placeholderImage: UIImage(named: "placeholder"))
                 }
                 publishedAtLabel.text = viewModel.publishedAgo
+            }
+        }
+    }
+    
+    var fontScaleConst: CGFloat? = nil {
+        didSet {
+            if fontScaleConst != nil {
+                rescaleFont()
+            }
+        }
+    }
+    
+    var marginConst: CGFloat? = nil {
+        didSet {
+            if marginConst != nil {
+                reconstraint()
             }
         }
     }
@@ -48,6 +65,7 @@ class ExploreCollectionViewCell: UICollectionViewCell {
         let authorLabel = UILabel()
         authorLabel.text = "Holly Ellyatt"
         authorLabel.font = UIFont.systemFont(ofSize: 12, weight: .bold)
+        authorLabel.translatesAutoresizingMaskIntoConstraints = false
         return authorLabel
     }()
     
@@ -56,6 +74,7 @@ class ExploreCollectionViewCell: UICollectionViewCell {
         publishedAtLabel.text = "4h ago"
         publishedAtLabel.textAlignment = .right
         publishedAtLabel.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        publishedAtLabel.translatesAutoresizingMaskIntoConstraints = false
         return publishedAtLabel
     }()
     
@@ -64,6 +83,7 @@ class ExploreCollectionViewCell: UICollectionViewCell {
         titleLabel.text = "The threat of nuclear war is real, top Russian official says; U.S. wants to see Moscow ‘weakened’"// - CNBC"
         titleLabel.numberOfLines = 4
         titleLabel.font = UIFont.systemFont(ofSize: 14.5, weight: .heavy)
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
         return titleLabel
     }()
     
@@ -71,6 +91,7 @@ class ExploreCollectionViewCell: UICollectionViewCell {
         let sourceLabel = UILabel()
         sourceLabel.text = "The Washington Post".uppercased()
         sourceLabel.font = UIFont.systemFont(ofSize: 12, weight: .heavy)
+        sourceLabel.translatesAutoresizingMaskIntoConstraints = false
         return sourceLabel
     }()
     
@@ -79,51 +100,51 @@ class ExploreCollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         
         contentView.addSubview(cardView)
+        cardView.addSubview(imageView)
+        cardView.addSubview(sourceLabel)
+        cardView.addSubview(titleLabel)
+        cardView.addSubview(publishedAtLabel)
+        cardView.addSubview(authorLabel)
+
         cardView.snp.makeConstraints { make in
-            make.top.leading.trailing.bottom.equalToSuperview()
+            make.edges.equalToSuperview()
         }
         
-        cardView.addSubview(imageView)
         imageView.frame = cardView.bounds
         imageView.snp.makeConstraints { make in
+            make.verticalEdges.equalToSuperview()
             make.leading.equalToSuperview()
             make.height.equalToSuperview()
             make.width.equalTo(cardView.snp.height)
         }
         
-        cardView.addSubview(titleLabel)
-        titleLabel.snp.makeConstraints { make in
-            make.leading.equalTo(imageView.snp.trailing).offset(20)
-            make.trailing.equalToSuperview().inset(20)
-            make.centerY.equalToSuperview()
+        authorLabel.snp.makeConstraints { make in
+            make.leading.equalTo(titleLabel.snp.leading)
+            make.bottom.equalToSuperview().inset(10)
         }
-        
-        cardView.addSubview(publishedAtLabel)
-        cardView.addSubview(authorLabel)
-        
-        //publishedAtLabel.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         
         publishedAtLabel.snp.makeConstraints { make in
             make.bottom.equalToSuperview().inset(10)
             make.trailing.equalToSuperview().inset(20)
-            make.leading.equalTo(authorLabel.snp.trailing).offset(10)
+            make.leading.equalTo(authorLabel.snp.trailing).offset(10).priority(.high)
         }
-        
-        authorLabel.snp.makeConstraints { make in
-            make.leading.equalTo(titleLabel.snp.leading)
-            make.bottom.equalToSuperview().inset(10)
-            make.trailing.equalTo(publishedAtLabel.snp.leading).offset(-10)
-            make.firstBaseline.equalTo(publishedAtLabel.snp.firstBaseline)
-        }
-        
-        
-        
-        cardView.addSubview(sourceLabel)
+        publishedAtLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+    
         sourceLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(10)
+            make.top.equalToSuperview().inset(10).priority(.required)
             make.leading.equalTo(authorLabel.snp.leading)
             make.trailing.equalToSuperview().inset(20)
         }
+        
+        titleLabel.snp.makeConstraints { make in
+            make.leading.equalTo(imageView.snp.trailing).offset(20)
+            make.trailing.equalToSuperview().inset(20)
+            make.top.equalTo(sourceLabel.snp.bottom)
+            make.bottom.equalTo(authorLabel.snp.top).priority(.high)
+        }
+        
+        authorLabel.setContentHuggingPriority(.required + 1, for: .vertical)
+        sourceLabel.setContentHuggingPriority(.required + 1, for: .vertical)
         
         cardView.layoutIfNeeded()
         
@@ -132,7 +153,47 @@ class ExploreCollectionViewCell: UICollectionViewCell {
         cardMaskLayer.frame = cardView.layer.bounds
         cardMaskLayer.path = cardRoundPath.cgPath
         cardView.layer.mask = cardMaskLayer
+    }
+    
+    convenience init (frame: CGRect, passedMarginsConst: CGFloat, passedFontScaleConst: CGFloat) {
+        self.init(frame: frame)
+        self.marginConst = passedMarginsConst
+        self.fontScaleConst = passedFontScaleConst
+        rescaleFont()
+        reconstraint()
+    }
+    
+    func rescaleFont() {
+        if fontScaleConst != nil {
+            authorLabel.font = UIFont.systemFont(ofSize: 12 * fontScaleConst!, weight: .bold)
+            publishedAtLabel.font = UIFont.systemFont(ofSize: 12 * fontScaleConst!, weight: .semibold)
+            titleLabel.font = UIFont.systemFont(ofSize: 14.5 * fontScaleConst!, weight: .heavy)
+            sourceLabel.font = UIFont.systemFont(ofSize: 12 * fontScaleConst!, weight: .heavy)
+        }
+    }
+    
+    func reconstraint() {
+        if marginConst != nil {
+            authorLabel.snp.updateConstraints { make in
+                make.bottom.equalToSuperview().inset(marginConst!/2)
+            }
+            
+            publishedAtLabel.snp.updateConstraints { make in
+                make.bottom.equalToSuperview().inset(marginConst!/2)
+                make.trailing.equalToSuperview().inset(marginConst!)
+                make.leading.equalTo(authorLabel.snp.trailing).offset(marginConst!/2).priority(.high)
+            }
         
+            sourceLabel.snp.updateConstraints { make in
+                make.top.equalToSuperview().inset(marginConst!/2).priority(.required)
+                make.trailing.equalToSuperview().inset(marginConst!)
+            }
+            
+            titleLabel.snp.updateConstraints { make in
+                make.leading.equalTo(imageView.snp.trailing).offset(marginConst!)
+                make.trailing.equalToSuperview().inset(marginConst!)
+            }
+        }
     }
     
     override func prepareForReuse() {
