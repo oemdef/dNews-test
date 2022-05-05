@@ -31,6 +31,8 @@ class DetailsViewController: UIViewController {
     var fontScaleConst: CGFloat? = nil {
         didSet {
             if fontScaleConst != nil {
+                //print(fontScaleConst)
+                //legacyButtonAppearance(fontScaleConst: fontScaleConst)
                 rescaleFont()
             }
         }
@@ -39,7 +41,7 @@ class DetailsViewController: UIViewController {
     var marginConst: CGFloat? = nil {
         didSet {
             if marginConst != nil {
-                configureButton()
+                configureButton(fontScaleConst: fontScaleConst)
                 reconstraint()
             }
         }
@@ -121,7 +123,7 @@ class DetailsViewController: UIViewController {
         self.navigationController?.navigationBar.titleTextAttributes = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: UIFont.labelFontSize, weight: .heavy)]
         self.navigationItem.largeTitleDisplayMode = .never
         
-        configureButton()
+        configureButton(fontScaleConst: fontScaleConst)
         
         view.addSubview(contentLabel)
         view.addSubview(publishedAtLabel)
@@ -220,8 +222,6 @@ class DetailsViewController: UIViewController {
             containerView.snp.updateConstraints { make in
                 make.bottom.equalTo(titleLabel.snp.top).offset(-marginConst!)
             }
-            //containerView.setContentHuggingPriority(.required+1, for: .vertical)
-
             
             containerView.layoutIfNeeded()
             
@@ -240,7 +240,7 @@ extension DetailsViewController: SFSafariViewControllerDelegate {
 }
     
 extension DetailsViewController {
-      func configureButton() {
+      func configureButton(fontScaleConst: CGFloat?) {
           if #available(iOS 15.0, *) {
               var config = UIButton.Configuration.filled()
               config.buttonSize = .large
@@ -258,29 +258,10 @@ extension DetailsViewController {
               = UIImage.SymbolConfiguration(scale: .medium)
               openSafariButton.configuration = config
           } else {
-              openSafariButton = UIButton(type: .roundedRect)
-              openSafariButton.setTitle(" Read more on the Web", for: .normal)
-              
-              var buttonImage = UIImage()
-              
-              if #available(iOS 13.0, *) {
-                  let buttonImageConfig = UIImage.SymbolConfiguration(pointSize: 17, weight: .semibold, scale: .medium)
-                  buttonImage = UIImage(systemName: "safari", withConfiguration: buttonImageConfig)!
-              } else {
-                  buttonImage = UIImage(named: "safari")!
-              }
-              
-              openSafariButton.setImage(buttonImage, for: .normal)
-              
-              openSafariButton.backgroundColor = .systemBlue
-              openSafariButton.tintColor = .white
-              openSafariButton.titleLabel?.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
-              openSafariButton.layer.cornerRadius = 17
-              
-              if #available(iOS 13.0, *) {
-                  openSafariButton.layer.cornerCurve = .continuous
-              }
-              
+              legacyButtonAppearance(fontScaleConst: fontScaleConst)
+              openSafariButton.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
+              openSafariButton.titleLabel?.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
+              openSafariButton.imageView?.transform = CGAffineTransform(scaleX: -1.0, y: 1.0)
           }
           
           if #available(iOS 14.0, *) {
@@ -300,7 +281,61 @@ extension DetailsViewController {
               make.height.equalTo(60)
               make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(16)
           }
+          openSafariButton.setNeedsDisplay()
       }
+    
+    func legacyButtonAppearance(fontScaleConst: CGFloat?) {
+        if fontScaleConst != nil {
+            openSafariButton = UIButton(type: .roundedRect)
+            openSafariButton.setTitle("Read more on the Web  ", for: .normal)
+            
+            var buttonImage = UIImage()
+            
+            if #available(iOS 13.0, *) {
+                let buttonImageConfig = UIImage.SymbolConfiguration(pointSize: 16 * fontScaleConst!, weight: .semibold, scale: .medium)
+                buttonImage = UIImage(systemName: "safari", withConfiguration: buttonImageConfig)!
+            } else {
+                buttonImage = UIImage(named: "safari")!
+            }
+            
+            openSafariButton.setImage(buttonImage, for: .normal)
+            openSafariButton.imageView?.layer.transform = CATransform3DMakeScale(fontScaleConst!, fontScaleConst!, fontScaleConst!)
+            
+            openSafariButton.backgroundColor = .systemBlue
+            openSafariButton.tintColor = .white
+            openSafariButton.titleLabel?.font = UIFont.systemFont(ofSize: 16 * fontScaleConst!, weight: .semibold)
+            openSafariButton.layer.cornerRadius = 16 * fontScaleConst!
+            
+            if #available(iOS 13.0, *) {
+                openSafariButton.layer.cornerCurve = .continuous
+            }
+            
+            openSafariButton.setNeedsDisplay()
+        } else {
+            openSafariButton = UIButton(type: .roundedRect)
+            openSafariButton.setTitle(" Read more on the Web", for: .normal)
+            
+            var buttonImage = UIImage()
+            
+            if #available(iOS 13.0, *) {
+                let buttonImageConfig = UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold, scale: .medium)
+                buttonImage = UIImage(systemName: "safari", withConfiguration: buttonImageConfig)!
+            } else {
+                buttonImage = UIImage(named: "safari")!
+            }
+            
+            openSafariButton.setImage(buttonImage, for: .normal)
+            
+            openSafariButton.backgroundColor = .systemBlue
+            openSafariButton.tintColor = .white
+            openSafariButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
+            openSafariButton.layer.cornerRadius = 16
+            
+            if #available(iOS 13.0, *) {
+                openSafariButton.layer.cornerCurve = .continuous
+            }
+        }
+    }
     
     func handleButtonPress() {
         guard let link = URL(string: self.viewModel!.url) else {

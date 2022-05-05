@@ -17,8 +17,8 @@ class ViewController: UIViewController {
     var viewModels = [ArticleViewModel]()
     var sections = [DSection]()
     
-    public var marginConst: CGFloat = 0
-    public var fontScaleConst: CGFloat = 0
+    var marginConst: CGFloat = 0
+    var fontScaleConst: CGFloat = 0
     
     private var nextPageToLoad = 1
     private var currentlyLoading = false
@@ -186,8 +186,8 @@ extension ViewController: UICollectionViewDelegate {
     guard let selectedItem = dataSource?.itemIdentifier(for: indexPath) else { return }
         let detailsVC = DetailsViewController()
         detailsVC.viewModel = selectedItem
-        detailsVC.marginConst = marginConst
         detailsVC.fontScaleConst = fontScaleConst
+        detailsVC.marginConst = marginConst
         navigationController?.pushViewController(detailsVC, animated: true)
     }
     
